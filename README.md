@@ -22,7 +22,7 @@ We recommend using [Anaconda](https://www.anaconda.com/products/individual) to s
 up the environment. Run the following commands:
 
 ```
-git clone https://github.com/kam1107/BungeeNeRF.git; cd BungeeNeRF
+git clone https://github.com/city-super/BungeeNeRF.git; cd BungeeNeRF
 conda create --name bungee python=3.7; conda activate bungee
 conda install pip; pip install --upgrade pip
 pip install -r requirements.txt
