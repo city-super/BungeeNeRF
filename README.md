@@ -30,7 +30,7 @@ mkdir data
 ```
 
 ## Data
-Download datasets from: [Google Drive](https://drive.google.com/drive/folders/1ybq-BuRH0EEpcp5OZT9xEMi-Px1pdx4D?usp=sharing) and unzip `multiscale_google_56Leonard.zip` and `multiscale_google_Transamerica.zip` to `data` dir. These two folders contain rendered images and processed camera poses. We also offer two .eps files that can be loaded into [Google Earth Studio](https://earth.google.com/studio/). You can adjust camera trajectory and render the most updated views for yourself. The appearance of cities are always updated in GES :) We recommend reading [3D Camera Export](https://earth.google.com/studio/docs/advanced-features/3d-camera-export/) for more camera configuration.
+Two pre-processed data can be download from: [Google Drive](https://drive.google.com/drive/folders/1ybq-BuRH0EEpcp5OZT9xEMi-Px1pdx4D?usp=sharing). Unzip `multiscale_google_56Leonard.zip` and `multiscale_google_Transamerica.zip` to `data` dir. These two folders contain rendered images and processed camera poses. We also offer two .eps files that can be loaded into [Google Earth Studio](https://earth.google.com/studio/). You can adjust camera trajectory and render the most updated views for yourself. The appearance of cities are always updated in GES :). We recommend reading [3D Camera Export](https://earth.google.com/studio/docs/advanced-features/3d-camera-export/) and [FAQs](https://www.google.com/earth/studio/faq/) for camera configuration and permitted usages.
 
 ![panel](imgs/panel.png)
 
