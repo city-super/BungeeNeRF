@@ -1,0 +1,16 @@
+expname = transamerica_test_st0
+basedir = ./logs
+datadir =./data/multiscale_google_Transamerica
+
+N_iters = 300000
+N_rand = 4096
+N_samples = 65
+N_importance = 65
+
+holdout = 16
+dataset_type = google
+factor = 3
+use_batching = True
+multires = 10
+raw_noise_std = 1e0
+cur_stage = 0
