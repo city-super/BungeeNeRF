@@ -30,12 +30,46 @@ mkdir data
 ```
 
 ## Data
-Download datasets from: [Google Drive](https://drive.google.com/drive/folders/1ybq-BuRH0EEpcp5OZT9xEMi-Px1pdx4D?usp=sharing) and unzip `multiscale_google_56Leonard.zip` and `multiscale_google_Transamerica.zip` to `data` dir. These two folders contain rendered images and processed camera poses. We also offer two .eps files that can be loaded into Google Earth Studio. You can adjust camera trajectory and render the most updated views for yourself. The appearance of cities are always updated in GES :) 
+Download datasets from: [Google Drive](https://drive.google.com/drive/folders/1ybq-BuRH0EEpcp5OZT9xEMi-Px1pdx4D?usp=sharing) and unzip `multiscale_google_56Leonard.zip` and `multiscale_google_Transamerica.zip` to `data` dir. These two folders contain rendered images and processed camera poses. We also offer two .eps files that can be loaded into [Google Earth Studio](https://earth.google.com/studio/). You can adjust camera trajectory and render the most updated views for yourself. The appearance of cities are always updated in GES :) We recommend reading [3D Camera Export](https://earth.google.com/studio/docs/advanced-features/3d-camera-export/) for more camera configuration.
+
+![panel](imgs/panel.png)
+
+<details>
+<summary> Exported 3D tracking data (.json) format </summary>                                                                                    
+{"name": xxxx,
+"width": xxxx,
+"height": xxxx,
+"numFrames": xxxx,
+"durationSeconds": 56.3,
+"cameraFrames": [
+        {
+            "position": {
+                "x": xxx,
+                "y": xxx,
+                "z": xxx
+            },
+            "rotation": {
+                "x": xxx,
+                "y": xxx,
+                "z": xxx
+            },
+            "coordinate": {
+                "latitude": xx,
+                "longitude": xx,
+                "altitude": xxx
+            },
+            "fovVertical": xx
+        },
+        ...
+    ],
+"trackPoints": []}
+</details>
+
 
 Some notes on processing camera poses exported from Google Earth Studio:
 * Scale it such that the whole scene is within a period (e.g. [-pi, pi]) to be effectively represented by the positional encoding. 
-* To get the rotation matrix, use the "rotation" entry in the exported .json file and apply x'=-x, y'=180-y, z'=180+z to get Euler angles.
-* Focal can be directly computed from image width, height and fov.
+* To get the rotation matrix, use the "rotation" entry in the exported .json file and consider applying x'=-x, y'=180-y, z'=180+z to get Euler angles.
+* H, W, Focal can be directly read from the exported .json file.
 
 Feel free to contact authors if you have any question about the data.
 
