@@ -1,6 +1,6 @@
 # BungeeNeRF
 This repository contains the code release for
-[BungeeNeRF: Progressive Neural Radiance Field for Extreme Multi-scale Scene Rendering](https://city-super.github.io/citynerf/img/supp.pdf), aka [CityNeRF](https://city-super.github.io/citynerf/).
+[BungeeNeRF: Progressive Neural Radiance Field for Extreme Multi-scale Scene Rendering](https://city-super.github.io/citynerf/img/BungeeNeRF_ECCV22.pdf), aka [CityNeRF](https://city-super.github.io/citynerf/).
 
 ![scheme](imgs/training_mechanism.png)
 
