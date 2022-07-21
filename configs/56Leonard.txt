@@ -8,7 +8,7 @@ N_samples = 65
 N_importance = 65
 
 holdout = 16
-dataset_type = google
+ray_nearfar = sphere
 factor = 3
 use_batching = True
 multires = 10
