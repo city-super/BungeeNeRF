@@ -450,7 +450,6 @@ def train():
     hwf = [H, W, focal]
 
     if args.render_test:
-        i_test = np.arange(int(poses.shape[0]))
         render_poses = np.array(poses[i_test])
         
     basedir = args.basedir
