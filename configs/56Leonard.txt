@@ -2,8 +2,8 @@ expname = 56leonard_test_st0
 basedir = ./logs
 datadir = ./data/multiscale_google_56Leonard
 
-N_iters = 300000
-N_rand = 4096
+N_iters = 200000
+N_rand = 2048
 N_samples = 65
 N_importance = 65
 

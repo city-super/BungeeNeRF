@@ -82,7 +82,6 @@ def render(H, W, focal, radii, chunk=1024*32, rays=None, stage=None, c2w=None, *
 
 
 def render_path(render_poses, hwf, chunk, render_kwargs, savedir=None, render_factor=0):
-
     H, W, focal = hwf
 
     if render_factor!=0:
@@ -373,7 +372,8 @@ def config_parser():
                         help='specific weights npy file to reload for coarse network')
     parser.add_argument("--cur_stage", type=int, default=0,
                         help='current training stage: smaller value means further scale')
-    parser.add_argument("--use_batching", action='store_true')
+    parser.add_argument("--use_batching", action='store_true',
+                        help='recommand set to False at later training stage for speed up')
     parser.add_argument("--precrop_iters", type=int, default=0,
                         help='number of steps to train on central crops')
     parser.add_argument("--precrop_frac", type=float,
@@ -407,9 +407,9 @@ def config_parser():
     parser.add_argument("--white_bkgd", action='store_true', 
                         help='set to render synthetic data on a white bkgd (always use for blender)')
     parser.add_argument("--factor", type=int, default=None, 
-                        help='downsample factor for LLFF images')
+                        help='downsample factor for images')
     parser.add_argument("--holdout", type=int, default=8, 
-                        help='will take every 1/N images as LLFF test set, paper uses 8')
+                        help='will take every 1/N images as test set')
 
     # logging/saving options
     parser.add_argument("--i_print",   type=int, default=100, 
@@ -421,7 +421,6 @@ def config_parser():
 
 
 def train():
-
     parser = config_parser()
     args = parser.parse_args()
 
@@ -580,7 +579,7 @@ def train():
 
 
         optimizer.zero_grad()
-        for stage in range(args.cur_stage+1):
+        for stage in range(max(batch_scale_codes)+1):
             rgb, _, _, _, extras = render(H, W, focal, batch_radii, chunk=args.chunk, rays=batch_rays, stage=stage, **render_kwargs_train)
             img_loss = img2mse(rgb*(batch_scale_codes<=stage), target_s*(batch_scale_codes<=stage))
             psnr = mse2psnr(img_loss)
