@@ -82,6 +82,7 @@ def render(H, W, focal, radii, chunk=1024*32, rays=None, stage=None, c2w=None, *
 
 
 def render_path(render_poses, hwf, chunk, render_kwargs, savedir=None, render_factor=0):
+
     H, W, focal = hwf
 
     if render_factor!=0:
@@ -133,6 +134,7 @@ def create_nerf(args):
     optimizer = torch.optim.Adam(params=grad_vars, lr=args.lrate, betas=(0.9, 0.999))
 
     start = 0
+    total_iter = 0
     basedir = args.basedir
     expname = args.expname
 
@@ -148,8 +150,14 @@ def create_nerf(args):
         ckpt = torch.load(ckpt_path)
 
         start = ckpt['global_step']
+        total_iter = ckpt['total_iter']
         model.load_state_dict(ckpt['network_fn_state_dict'], strict=False)
-                
+        try:
+            optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+        except:
+            print('Start a new training stage, reset optimizer.')
+            start = 0
+
         if args.render_test:
             model.eval()
 
@@ -167,7 +175,7 @@ def create_nerf(args):
     render_kwargs_test['perturb'] = False
     render_kwargs_test['raw_noise_std'] = 0.
 
-    return render_kwargs_train, render_kwargs_test, start, grad_vars, optimizer
+    return render_kwargs_train, render_kwargs_test, start, total_iter, grad_vars, optimizer
 
 
 def raw2outputs(raw, z_vals, rays_d, stage, raw_noise_std=0, white_bkgd=False):
@@ -411,6 +419,7 @@ def config_parser():
     parser.add_argument("--holdout", type=int, default=8, 
                         help='will take every 1/N images as test set')
 
+
     # logging/saving options
     parser.add_argument("--i_print",   type=int, default=100, 
                         help='frequency of console printout and metric loggin')
@@ -421,6 +430,7 @@ def config_parser():
 
 
 def train():
+
     parser = config_parser()
     args = parser.parse_args()
 
@@ -463,7 +473,7 @@ def train():
         with open(f, 'w') as file:
             file.write(open(args.config, 'r').read())
 
-    render_kwargs_train, render_kwargs_test, start_iter, grad_vars, optimizer = create_nerf(args)
+    render_kwargs_train, render_kwargs_test, start_iter, total_iter, grad_vars, optimizer = create_nerf(args)
     scene_stat = {
         'ray_nearfar' : args.ray_nearfar,
         'scene_origin' : scene_origin,
@@ -473,7 +483,6 @@ def train():
     render_kwargs_test.update(scene_stat)
 
     global_step = start_iter
-    reset_global_step = 0
 
     if args.render_test:
         render_poses = torch.Tensor(render_poses).to(device)
@@ -530,7 +539,7 @@ def train():
 
     writer = SummaryWriter(os.path.join(basedir, 'summaries', expname))
     
-    for i in trange(start_iter+1, start_iter+args.N_iters+1):
+    for i in trange(start_iter+1, args.N_iters+1):
         if args.use_batching:
             batch = torch.tensor(rays_rgb[i_batch : i_batch+args.N_rand]).to(device)
             batch_radii = torch.tensor(radii[i_batch : i_batch+args.N_rand]).to(device)
@@ -556,7 +565,7 @@ def train():
             dx = torch.cat([dx, dx[-2:-1, :]], 0)
             radii = dx[..., None] * 2 / np.sqrt(12)
 
-            if i-start_iter < args.precrop_iters:
+            if i < args.precrop_iters:
                 dH = int(H//2 * args.precrop_frac)
                 dW = int(W//2 * args.precrop_frac)
                 coords = torch.stack(
@@ -579,6 +588,7 @@ def train():
 
 
         optimizer.zero_grad()
+
         for stage in range(max(batch_scale_codes)+1):
             rgb, _, _, _, extras = render(H, W, focal, batch_radii, chunk=args.chunk, rays=batch_rays, stage=stage, **render_kwargs_train)
             img_loss = img2mse(rgb*(batch_scale_codes<=stage), target_s*(batch_scale_codes<=stage))
@@ -593,7 +603,7 @@ def train():
         
         decay_rate = 0.1
         decay_steps = args.lrate_decay * 1000
-        new_lrate = args.lrate * (decay_rate ** (reset_global_step / decay_steps))
+        new_lrate = args.lrate * (decay_rate ** (global_step / decay_steps))
         for param_group in optimizer.param_groups:
             param_group['lr'] = new_lrate
        
@@ -601,6 +611,7 @@ def train():
             path = os.path.join(basedir, expname, '{:06d}.tar'.format(i))
             torch.save({
                 'global_step': global_step,
+                'total_iter': total_iter,
                 'network_fn_state_dict': render_kwargs_train['network_fn'].state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
             }, path)
@@ -609,11 +620,11 @@ def train():
     
         if i%args.i_print==0:
             tqdm.write(f"[TRAIN] Iter: {i} Loss: {loss.item()}  PSNR: {psnr.item()}")
-            writer.add_scalar('Train/loss', loss, i)
-            writer.add_scalar('Train/psnr', psnr, i)
+            writer.add_scalar('Train/loss', loss, total_iter)
+            writer.add_scalar('Train/psnr', psnr, total_iter)
 
         global_step += 1
-        reset_global_step += 1
+        total_iter += 1
 
 
 if __name__=='__main__':
