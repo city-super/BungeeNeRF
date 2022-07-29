@@ -93,10 +93,10 @@ python run_bungee.py --config configs/EXP_CONFIG_FILE --render_test
 
 ## Citation
 ```
-@article{xiangli2021citynerf,
-    title={CityNeRF: Building NeRF at City Scale},
-    author={Xiangli, Yuanbo and Xu, Linning and Pan, Xingang and Zhao, Nanxuan and Rao, Anyi and Theobalt, Christian and Dai, Bo and Lin, Dahua},
-    journal={arXiv preprint arXiv:2112.05504},
-    year={2021}
+@inproceedings{xiangli2022bungeenerf,
+    title={BungeeNeRF: Progressive Neural Radiance Field for Extreme Multi-scale Scene Rendering},
+    author={Xiangli, Yuanbo and Xu, Linning and Pan, Xingang, and Zhao, Nanxuan and Rao, Anyi and Theobalt, Christian and Dai, Bo and Lin, Dahua},
+    booktitle = {The European Conference on Computer Vision (ECCV)}, 
+    year={2022}
 }
 ```
