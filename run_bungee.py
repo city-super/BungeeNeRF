@@ -81,7 +81,7 @@ def render(H, W, focal, radii, chunk=1024*32, rays=None, stage=None, c2w=None, *
     return ret_list + [ret_dict]
 
 
-def render_path(render_poses, hwf, chunk, render_kwargs, savedir=None, render_factor=0):
+def render_path(render_poses, hwf, chunk, render_kwargs, stage=0, savedir=None, render_factor=0):
 
     H, W, focal = hwf
 
@@ -99,7 +99,7 @@ def render_path(render_poses, hwf, chunk, render_kwargs, savedir=None, render_fa
         print(i, time.time() - t)
         t = time.time()
 
-        rgb, _, _, _, _ = render(H, W, focal, radii[i], chunk=chunk, stage=0, c2w=c2w[:3,:4], **render_kwargs)
+        rgb, _, _, _, _ = render(H, W, focal, radii[i], chunk=chunk, stage=stage, c2w=c2w[:3,:4], **render_kwargs)
         rgbs.append(rgb.cpu().numpy())
         
         if i==0:
@@ -490,8 +490,9 @@ def train():
         with torch.no_grad():
             testsavedir = os.path.join(basedir, expname, 'render_{:06d}'.format(start_iter))
             os.makedirs(testsavedir, exist_ok=True)
-
-            rgbs = render_path(render_poses, hwf, args.chunk, render_kwargs_test, savedir=testsavedir, render_factor=args.render_factor)
+            # By default it uses the deepest output head to render result (i.e. cur_stage). 
+            # Sepecify 'stage' to shallower output head for lower level of detail rendering.
+            rgbs = render_path(render_poses, hwf, args.chunk, render_kwargs_test, stage=args.cur_stage, savedir=testsavedir, render_factor=args.render_factor)
             print('Done rendering, saved in ', testsavedir)
             imageio.mimwrite(os.path.join(testsavedir, 'video.mp4'), to8b(rgbs), fps=30, quality=8)
             return
