@@ -67,9 +67,11 @@ Two pre-processed data can be download from: [Google Drive](https://drive.google
 
 
 Some notes on processing camera poses exported from Google Earth Studio:
-* Scale it such that the whole scene is within a period (e.g. [-pi, pi]) to be effectively represented by the positional encoding. 
-* To get the rotation matrix, use the "rotation" entry in the exported .json file and consider applying x'=-x, y'=180-y, z'=180+z to get Euler angles.
-* H, W, Focal can be directly read from the exported .json file.
+* Use the local coordinate when exporting the .json file (i.e. [ECEF coordinate system](http://dirsig.cis.rit.edu/docs/new/coordinates.html)) by setting a track point at the center of the scene. The "position" entry and "rotation" entry give camera poses.
+* To get the rotation matrix, use the "rotation" entry in the exported .json file and consider applying `x'=-x, y'=180-y, z'=180+z` to get Euler angles.
+* For the ease of computing the ray-sphere intersection of different cities, we further transfer the coordinate to [ENU](http://dirsig.cis.rit.edu/docs/new/coordinates.html) coordinate system. Check out [this](https://github.com/geospace-code/pymap3d/blob/743bb002d5f6ea1a7f788bcebd1ff5f62a66460b/src/pymap3d/ecef.py#L206) function. 
+* Scale down the whole scene to lie within a period (e.g. [-pi, pi]) to be effectively represented by the positional encoding.
+* H, W, fov can be directly read from the exported .json file and used to compute focal.
 
 Feel free to contact authors if you have any question about the data.
 
